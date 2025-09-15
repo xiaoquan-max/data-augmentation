@@ -1,0 +1,307 @@
+app:
+  description: 数据增强
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: 数据增强
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/tongyi:0.0.41@5e9026df7d8449ebacf5661f0ab286331085605f34fab37dfdf43d19b9b5e363
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: knowledge-retrieval
+      id: 1756104676794-source-1756104698209-target
+      source: '1756104676794'
+      sourceHandle: source
+      target: '1756104698209'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1756104698209-source-1756104703905-target
+      source: '1756104698209'
+      sourceHandle: source
+      target: '1756104703905'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: 1756104703905-source-1756174329175-target
+      source: '1756104703905'
+      sourceHandle: source
+      target: '1756174329175'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: 1756174329175-source-1756104731928-target
+      source: '1756174329175'
+      sourceHandle: source
+      target: '1756104731928'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: true
+        title: 开始
+        type: start
+        variables:
+        - label: 类目名称
+          max_length: 160
+          options: []
+          required: true
+          type: text-input
+          variable: category
+        - label: 标注结果
+          max_length: 1000
+          options: []
+          required: true
+          type: paragraph
+          variable: title
+      height: 115
+      id: '1756104676794'
+      position:
+        x: 156.65266933343787
+        y: 44.797682386396986
+      positionAbsolute:
+        x: 156.65266933343787
+        y: 44.797682386396986
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - q9Kr3hblWQGRGEf8tVdt+WvpzcEcb5RfepkCKn4KkJwsmBOC0AYQrOjtWd3N1BJy
+        desc: ''
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: gte-rerank
+            provider: langgenius/tongyi/tongyi
+          top_k: 4
+        query_variable_selector:
+        - '1756104676794'
+        - title
+        retrieval_mode: multiple
+        selected: false
+        title: 知识检索
+        type: knowledge-retrieval
+      height: 91
+      id: '1756104698209'
+      position:
+        x: 408.54648407184425
+        y: 179.75527096668208
+      positionAbsolute:
+        x: 408.54648407184425
+        y: 179.75527096668208
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1756104698209'
+          - result
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: deepseek-v3
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: ab938911-1246-4633-b082-38b87fd173c2
+          role: system
+          text: '你是一名电商标题生成专家。你的任务是根据参考范例的风格，为给定的商品属性标注结果生成对应生动的标题。
+
+
+            '
+        - id: 35a224f4-0024-47e6-9552-4857d08a694c
+          role: user
+          text: '请根据以下参考范例
+
+            【参考范例】：
+
+            {{#context#}}
+
+            为【商品属性】：
+
+            {{#1756104676794.title#}}
+
+            生成电商标题，要求：1. 属性完整且一致：需要保证标注结果中的所有属性值（属性名称冒号后引号内的所有内容）都完全一致的包含在生成的标题中确保能在生成的标题中找到一摸一样的属性内容（尤其是品牌属性，），空值表示不会出现该属性，可以合理补充标注结果中未出现的属性
+
+            2. 符合电商场景：生成的标题必须符合电商场景和规则，比如电商标题一般要求品牌在名称前面
+
+            3、吸引用户，生成标题时不要这是简单拼接，可以合理插入营销语句来博取眼球，使生成的标题既多样又生动
+
+            4. 只输出标题：最后仅输出生成的标题，不要输出其余内容
+
+            请严格按照要求生成标题，优先满足第一点要求，示例中可能出现标注属性值与标题中的实际值不一致的情况，请不要学习，回答之前请再次确保能够在生成标题中找到标注结果内所有的完全一致的属性项'
+        - id: f1fb59c3-162c-4e2e-9c15-dacc6bc0e917
+          role: assistant
+          text: ''
+        selected: false
+        structured_output_enabled: true
+        title: LLM
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1756104703905'
+      position:
+        x: 653.1800988046642
+        y: 294.07237548604894
+      positionAbsolute:
+        x: 653.1800988046642
+        y: 294.07237548604894
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1756104703905'
+          - text
+          value_type: string
+          variable: result
+        - value_selector:
+          - '1756174329175'
+          - result
+          value_type: string
+          variable: verify
+        selected: false
+        title: 结束
+        type: end
+      height: 116
+      id: '1756104731928'
+      position:
+        x: 1162.3478120172124
+        y: 560.46016578404
+      positionAbsolute:
+        x: 1162.3478120172124
+        y: 560.46016578404
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import ast\ndef main(arg1, arg2):\n    label_dict = ast.literal_eval(arg2)\n\
+          \    properties = list(label_dict.values())\n    properties = [prop for\
+          \ prop in properties if prop]\n    not_included = [prop for prop in properties\
+          \ if prop not in arg1]\n    return {'result':'是' if not not_included else\
+          \ ','.join(not_included)}\n"
+        code_language: python3
+        desc: 判断生成标题是否包含所有标注属性
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 代码执行
+        type: code
+        variables:
+        - value_selector:
+          - '1756104703905'
+          - text
+          value_type: string
+          variable: arg1
+        - value_selector:
+          - '1756104676794'
+          - title
+          value_type: string
+          variable: arg2
+      height: 81
+      id: '1756174329175'
+      position:
+        x: 901.7142372250704
+        y: 433.59556348062256
+      positionAbsolute:
+        x: 901.7142372250704
+        y: 433.59556348062256
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 404.6037119748709
+      y: 182.70298922639262
+      zoom: 0.4876593076317861
